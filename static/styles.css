@@ -147,6 +147,55 @@ html, body {
 }
 
 /* ==========================================================================
+   Unified Dropdown (<select>) Base
+   Every select shares: custom chevron, ellipsis on long values, themed popup.
+   Individual select classes only tune size/colour (use background-color, never
+   the `background` shorthand, or the chevron is wiped).
+   ========================================================================== */
+
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  min-width: 0;
+  max-width: 100%;
+  padding-right: 24px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6' fill='none' stroke='%23857F75' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 1l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 10px 6px;
+  color-scheme: light;
+}
+
+[data-theme="dark"] select {
+  color-scheme: dark;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6' fill='none' stroke='%23A6A095' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 1l4 4 4-4'/%3E%3C/svg%3E");
+}
+
+select option,
+select optgroup {
+  background-color: var(--bg-elevated);
+  color: var(--text-primary);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 12.5px;
+  font-weight: 400;
+  white-space: normal;
+}
+
+select:focus-visible {
+  outline: 2px solid var(--accent-border);
+  outline-offset: 1px;
+}
+
+select:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
    Topbar & Active Document Header Controls
    ========================================================================== */
 
@@ -218,11 +267,16 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
 .crumb-muted {
   color: var(--text-muted);
   font-size: 12.5px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .active-doc-header-controls {
@@ -230,7 +284,17 @@ html, body {
   align-items: center;
   gap: 7px;
   max-width: 100%;
+  min-width: 0;
   animation: fadeSlideUp 0.24s var(--ease-spring);
+}
+
+.active-doc-header-controls > * {
+  min-width: 0;
+}
+
+.active-doc-header-controls .star-btn,
+.active-doc-header-controls .status-pill-select {
+  flex-shrink: 0;
 }
 
 .star-btn {
@@ -263,7 +327,10 @@ html, body {
   font-size: 13px;
   font-weight: 600;
   color: var(--text-primary);
-  width: 240px;
+  flex: 1 3 150px;
+  width: auto;
+  min-width: 80px;
+  max-width: 260px;
   text-overflow: ellipsis;
   transition: border-color 0.15s, background-color 0.15s;
 }
@@ -277,15 +344,17 @@ html, body {
   outline: none;
   border-color: var(--accent);
   background: var(--bg-card);
-  width: 280px;
+  max-width: 340px;
 }
 
 .pill-select {
   height: 26px;
-  padding: 0 8px;
+  flex: 0 1 auto;
+  max-width: 150px;
+  padding: 0 24px 0 8px;
   border-radius: 5px;
   border: 1px solid var(--border-hairline);
-  background: var(--bg-elevated);
+  background-color: var(--bg-elevated);
   color: var(--text-secondary);
   font-family: inherit;
   font-size: 11.5px;
@@ -301,13 +370,13 @@ html, body {
 }
 
 .status-pill-select[data-status="completed"] {
-  background: var(--status-ok-bg);
+  background-color: var(--status-ok-bg);
   color: var(--status-ok);
   border-color: rgba(40, 117, 72, 0.25);
 }
 
 .status-pill-select[data-status="in_progress"] {
-  background: var(--status-warn-bg);
+  background-color: var(--status-warn-bg);
   color: var(--status-warn);
   border-color: rgba(181, 106, 18, 0.25);
 }
@@ -941,14 +1010,22 @@ html, body {
 }
 
 .sort-select {
+  flex: 0 1 auto;
+  max-width: 62%;
   border: none;
-  background: transparent;
+  background-color: transparent;
   color: var(--text-secondary);
   font-family: inherit;
   font-size: 11px;
   font-weight: 500;
+  padding: 2px 22px 2px 4px;
+  background-position: right 4px center;
   cursor: pointer;
   outline: none;
+}
+
+.sort-select:hover {
+  color: var(--text-primary);
 }
 
 /* Document Cards in Sidebar */
@@ -2126,12 +2203,14 @@ body.pdf-dark-adapt .editorial-article .chart img {
 }
 
 .compact-thread-select {
-  max-width: 120px;
+  flex: 0 1 130px;
+  min-width: 70px;
+  max-width: 130px;
   height: 25px;
-  padding: 0 6px;
+  padding: 0 22px 0 7px;
   border-radius: 4px;
   border: 1px solid var(--border-hairline);
-  background: var(--bg-card);
+  background-color: var(--bg-card);
   color: var(--text-secondary);
   font-family: inherit;
   font-size: 11px;
@@ -2458,12 +2537,13 @@ body.pdf-dark-adapt .editorial-article .chart img {
 
 .subtle-mini-select {
   border: 1px solid transparent;
-  background: transparent;
+  background-color: transparent;
   color: var(--text-secondary);
   font-family: "JetBrains Mono", monospace;
   font-size: 10.5px;
   font-weight: 500;
-  padding: 2px 4px;
+  padding: 3px 20px 3px 6px;
+  background-position: right 6px center;
   border-radius: 4px;
   cursor: pointer;
   outline: none;
@@ -2472,7 +2552,7 @@ body.pdf-dark-adapt .editorial-article .chart img {
 
 .subtle-mini-select:hover {
   border-color: var(--border-hairline);
-  background: var(--bg-panel);
+  background-color: var(--bg-panel);
   color: var(--text-primary);
 }
 
@@ -2673,7 +2753,7 @@ body.pdf-dark-adapt .editorial-article .chart img {
 
 .form-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 12px;
 }
 
@@ -2681,6 +2761,7 @@ body.pdf-dark-adapt .editorial-article .chart img {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  min-width: 0;
 }
 
 .form-group label {
@@ -2691,15 +2772,23 @@ body.pdf-dark-adapt .editorial-article .chart img {
 
 .form-input,
 .form-select {
+  width: 100%;
+  min-width: 0;
   height: 34px;
   padding: 0 9px;
   border-radius: 5px;
   border: 1px solid var(--border-strong);
-  background: var(--bg-card);
+  background-color: var(--bg-card);
   color: var(--text-primary);
   font-family: inherit;
   font-size: 12.5px;
   outline: none;
+}
+
+.form-select {
+  padding-right: 28px;
+  background-position: right 11px center;
+  cursor: pointer;
 }
 
 .form-input:focus,
@@ -2776,4 +2865,609 @@ body.pdf-dark-adapt .editorial-article .chart img {
   border-top: 1px solid var(--border-hairline);
   max-height: 140px;
   overflow-y: auto;
+}
+
+/* ==========================================================================
+   Overflow & Responsive Hardening
+   Keeps text/controls inside their panes at every window size.
+   ========================================================================== */
+
+/* ---- Topbar ---- */
+.topbar-right {
+  min-width: 0;
+}
+
+#apiKeyLabel {
+  min-width: 0;
+  max-width: 190px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.api-pill,
+#openUploadModalBtn {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.api-pill {
+  min-width: 0;
+}
+
+.brand,
+.brand-sub {
+  white-space: nowrap;
+}
+
+/* ---- Workspace grid: columns may shrink, chat never exceeds 45% of window ---- */
+.workspace {
+  grid-template-columns: 268px minmax(0, 1fr) 4px min(var(--chat-pane-width), 45vw);
+}
+
+.workspace.sidebar-collapsed {
+  grid-template-columns: 0px minmax(0, 1fr) 4px min(var(--chat-pane-width), 45vw);
+}
+
+.workspace.chat-collapsed {
+  grid-template-columns: 268px minmax(0, 1fr) 0px 0px;
+}
+
+.workspace.sidebar-collapsed.chat-collapsed {
+  grid-template-columns: 0px minmax(0, 1fr) 0px 0px;
+}
+
+.reader-pane,
+.sidebar,
+.chat-pane {
+  min-width: 0;
+}
+
+/* ---- Sidebar ---- */
+.side-tab {
+  min-width: 0;
+  padding: 0 6px;
+  white-space: nowrap;
+}
+
+.side-tab span:not(.tab-pill-count) {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.project-item {
+  gap: 6px;
+  min-width: 0;
+}
+
+.project-item-left > span:not(.proj-dot) {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.project-item-right {
+  flex-shrink: 0;
+}
+
+.sidebar-section-header span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mini-add-btn {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.new-project-header span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.color-picker-row {
+  flex-wrap: wrap;
+}
+
+.sort-row {
+  gap: 8px;
+}
+
+.sort-label {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.doc-item {
+  min-width: 0;
+}
+
+.doc-item-top > .doc-item-title {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.doc-delete-btn {
+  flex-shrink: 0;
+}
+
+.mini-badge {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.doc-item-meta {
+  flex-wrap: wrap;
+}
+
+.global-chat-card {
+  min-width: 0;
+}
+
+.global-chat-title,
+.global-chat-preview {
+  overflow-wrap: anywhere;
+}
+
+.global-chat-foot {
+  gap: 8px;
+  min-width: 0;
+}
+
+.global-chat-foot > span {
+  white-space: nowrap;
+}
+
+.global-chat-foot > .global-chat-doc {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.global-chat-foot > span:last-child {
+  flex-shrink: 0;
+}
+
+/* ---- Reader toolbar: wrap instead of clipping controls off-screen ---- */
+.reader-toolbar {
+  height: auto;
+  min-height: 42px;
+  padding: 5px 14px;
+  flex-wrap: wrap;
+  row-gap: 5px;
+  overflow: visible;
+}
+
+.reader-meta-group {
+  min-width: 0;
+}
+
+.reader-controls {
+  flex: 0 1 auto;
+  flex-wrap: wrap;
+  row-gap: 5px;
+  min-width: 0;
+}
+
+.filter-chips-row {
+  flex-wrap: wrap;
+  overflow-x: visible;
+}
+
+.seg-btn {
+  white-space: nowrap;
+}
+
+.icon-btn-sm {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Compact label-only controls as the reader column gets narrower (window width,
+   not container width, so fixed-position popovers inside the reader are unaffected) */
+@media (max-width: 1750px) {
+  #pdfThemeModeLabel,
+  .edit-mode-pill > span:last-child {
+    display: none;
+  }
+  .edit-mode-pill {
+    padding: 0 7px;
+  }
+}
+
+@media (max-width: 1500px) {
+  .acrobat-slider {
+    display: none;
+  }
+}
+
+/* ---- Reader content ---- */
+.editorial-article {
+  overflow-wrap: break-word;
+  min-width: 0;
+}
+
+.editorial-article img,
+.editorial-article svg:not(.katex svg) {
+  max-width: 100%;
+  height: auto;
+}
+
+.editorial-article table {
+  table-layout: auto;
+  max-width: 100%;
+}
+
+.editorial-article th,
+.editorial-article td {
+  overflow-wrap: anywhere;
+}
+
+.editorial-article .page-body-container {
+  overflow-wrap: break-word;
+}
+
+.page-card-ribbon {
+  gap: 8px;
+}
+
+.editorial-display {
+  font-size: clamp(28px, 4.2vw, 38px);
+  overflow-wrap: anywhere;
+}
+
+.progress-title,
+.progress-stage,
+.file-drop-label {
+  overflow-wrap: anywhere;
+}
+
+.progress-stats {
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.reader-scroll {
+  min-width: 0;
+}
+
+.source-editor-bar {
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.source-editor-bar > span {
+  min-width: 0;
+}
+
+/* ---- Popovers ---- */
+.math-editor-popover {
+  max-height: calc(100vh - 24px);
+  overflow-y: auto;
+}
+
+.math-editor-footer {
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.selection-popover {
+  max-width: calc(100vw - 16px);
+}
+
+/* ---- Chat pane ---- */
+.chat-pane {
+  container-type: inline-size;
+  container-name: chat;
+}
+
+.chat-header-left > * {
+  min-width: 0;
+}
+
+.chat-title-inline {
+  min-width: 60px;
+}
+
+.chat-feed {
+  overflow-x: hidden;
+}
+
+.msg-block,
+.msg-assistant .msg-bubble,
+.msg-user .msg-bubble {
+  min-width: 0;
+}
+
+.msg-user .msg-bubble,
+.msg-excerpt-quote {
+  overflow-wrap: anywhere;
+}
+
+.msg-content {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.msg-content pre {
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 10px 12px;
+  margin: 0.5em 0 0.8em;
+  border-radius: 5px;
+  border: 1px solid var(--border-hairline);
+  background: var(--bg-code);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+
+.msg-content code {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.88em;
+  background: var(--bg-code);
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+.msg-content pre code {
+  background: none;
+  padding: 0;
+  overflow-wrap: normal;
+}
+
+.msg-content table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  margin: 0.5em 0 0.8em;
+  font-size: 12px;
+}
+
+.msg-content th,
+.msg-content td {
+  border: 1px solid var(--border-hairline);
+  padding: 4px 8px;
+  text-align: left;
+}
+
+.msg-content img {
+  max-width: 100%;
+  height: auto;
+}
+
+.msg-content blockquote {
+  margin: 0.5em 0;
+  padding-left: 10px;
+  border-left: 3px solid var(--border-strong);
+  color: var(--text-secondary);
+}
+
+.msg-content h1,
+.msg-content h2,
+.msg-content h3,
+.msg-content h4 {
+  font-size: 1.02em;
+  margin: 0.8em 0 0.4em;
+}
+
+.msg-content .katex-display {
+  max-width: 100%;
+  overflow-y: hidden;
+}
+
+.msg-actions-bar {
+  flex-wrap: wrap;
+}
+
+.reasoning-body {
+  overflow-wrap: anywhere;
+}
+
+.excerpt-content {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.excerpt-close {
+  flex-shrink: 0;
+}
+
+/* ---- Composer ---- */
+.composer-footer {
+  flex-wrap: wrap;
+  row-gap: 4px;
+}
+
+.composer-footer-left {
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+.composer-footer-right {
+  flex: 1 1 auto;
+  min-width: 0;
+  justify-content: flex-end;
+}
+
+.composer-hint {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.btn-send {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* The shortcut hint needs ~190px; hide it when the chat column is tight
+   (it's also available as the Ask button tooltip). */
+@container chat (max-width: 540px) {
+  .composer-hint {
+    display: none;
+  }
+}
+
+/* ---- Toast ---- */
+.undo-toast {
+  max-width: calc(100vw - 32px);
+}
+
+.undo-toast-msg {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.undo-toast-btn,
+.undo-toast-close {
+  flex-shrink: 0;
+}
+
+/* ---- Modals ---- */
+.modal-card,
+.lightbox-card {
+  max-height: calc(100vh - 40px);
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.modal-header > div {
+  min-width: 0;
+}
+
+.modal-header h3 {
+  overflow-wrap: anywhere;
+}
+
+.modal-close {
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+.modal-body,
+.modal-body > * {
+  min-width: 0;
+}
+
+.modal-desc,
+.field-help,
+.callout-list,
+.file-drop-sub {
+  overflow-wrap: anywhere;
+}
+
+.info-callout code,
+.modal-desc code,
+.field-help code {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.92em;
+  background: var(--bg-code);
+  padding: 1px 4px;
+  border-radius: 3px;
+  overflow-wrap: anywhere;
+}
+
+.lightbox-top {
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.lightbox-actions {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.lightbox-img-wrap img {
+  max-width: 100%;
+  height: auto;
+}
+
+.lightbox-desc {
+  overflow-wrap: anywhere;
+}
+
+/* ---- Narrow windows ---- */
+@media (max-width: 1250px) {
+  .brand-divider,
+  .brand-sub {
+    display: none;
+  }
+  .editorial-article .page-body-container {
+    padding: 30px 28px !important;
+  }
+  .reader-scroll {
+    padding: 20px 18px 70px;
+  }
+}
+
+@media (max-width: 1100px) {
+  .workspace {
+    grid-template-columns: 220px minmax(0, 1fr) 4px min(var(--chat-pane-width), 38vw);
+  }
+  .workspace.sidebar-collapsed {
+    grid-template-columns: 0px minmax(0, 1fr) 4px min(var(--chat-pane-width), 38vw);
+  }
+  .workspace.chat-collapsed {
+    grid-template-columns: 220px minmax(0, 1fr) 0px 0px;
+  }
+  .workspace.sidebar-collapsed.chat-collapsed {
+    grid-template-columns: 0px minmax(0, 1fr) 0px 0px;
+  }
+  .side-tab svg {
+    display: none;
+  }
+  .reader-meta-group {
+    flex: 0 1 auto;
+    flex-wrap: wrap;
+    row-gap: 5px;
+    white-space: normal;
+  }
+  #apiKeyLabel {
+    max-width: 110px;
+  }
+  .pill-select {
+    max-width: 110px;
+  }
+  .editorial-article .page-body-container {
+    padding: 22px 18px !important;
+  }
+  .editorial-article .multi-column-row.cols-3,
+  .editorial-article .multi-column-row.cols-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  .form-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  #openUploadModalBtn span {
+    display: none;
+  }
+  #apiKeyLabel {
+    max-width: 70px;
+  }
+  .doc-title-inline-input {
+    min-width: 70px;
+  }
+  .editorial-article .multi-column-row.cols-2 {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
 }

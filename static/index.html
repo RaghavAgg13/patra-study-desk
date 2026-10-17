@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
   <!-- KaTeX CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
-  <link rel="stylesheet" href="/static/styles.css?v=6" />
+  <link rel="stylesheet" href="/static/styles.css?v=7" />
 </head>
 <body>
   <div class="app-shell">
@@ -499,7 +499,7 @@
               </div>
               <div class="composer-footer-right">
                 <span class="composer-hint">Enter to send · Shift+Enter newline</span>
-                <button type="submit" id="sendChatBtn" class="btn btn-primary btn-send">
+                <button type="submit" id="sendChatBtn" class="btn btn-primary btn-send" title="Enter to send · Shift+Enter for newline">
                   <span>Ask</span>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="22" y1="2" x2="11" y2="13"></line>
@@ -571,10 +571,10 @@
           <div class="form-group">
             <label for="uploadFormatSelect">Extraction Mode</label>
             <select id="uploadFormatSelect" class="form-select">
-              <option value="html" selected>Structured Pages + Diagrams + LaTeX (`html`)</option>
-              <option value="md">Clean Markdown (`md`)</option>
+              <option value="html" selected>Structured pages + LaTeX (html)</option>
+              <option value="md">Clean Markdown (md)</option>
             </select>
-            <span class="field-help">`html` preserves embedded diagrams & page layout</span>
+            <span class="field-help"><code>html</code> preserves embedded diagrams & page layout</span>
           </div>
         </div>
 
@@ -654,6 +654,6 @@
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
-  <script src="/static/app.js?v=6"></script>
+  <script src="/static/app.js?v=7"></script>
 </body>
 </html>

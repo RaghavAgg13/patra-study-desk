@@ -682,7 +682,7 @@ function renderGlobalChatsList() {
           <div class="global-chat-title">${escapeHtml(c.title || "Doubt Session")}</div>
           <div class="global-chat-preview">${escapeHtml(c.last_message_preview || "Empty thread")}</div>
           <div class="global-chat-foot">
-            <span>📄 ${escapeHtml((c.doc_title || "").slice(0, 22))}</span>
+            <span class="global-chat-doc" title="${escapeHtml(c.doc_title || "")}">📄 ${escapeHtml(c.doc_title || "")}</span>
             <span>${c.message_count || 0} msgs · ${dateStr}</span>
           </div>
         </div>
@@ -1588,14 +1588,16 @@ function openMathEditorForElement(formulaEl) {
   const popover = els.mathEditorPopover;
   if (popover) {
     popover.style.display = "block";
-    const popoverWidth = 420;
-    const popoverHeight = 240;
+    const popoverWidth = popover.offsetWidth || 420;
+    const popoverHeight = popover.offsetHeight || 240;
 
-    const left = Math.max(16, Math.min(window.innerWidth - popoverWidth - 20, rect.left));
+    const left = Math.max(12, Math.min(window.innerWidth - popoverWidth - 12, rect.left));
     let top = rect.bottom + 8;
-    if (top + popoverHeight > window.innerHeight - 20) {
-      top = Math.max(70, rect.top - popoverHeight - 8);
+    if (top + popoverHeight > window.innerHeight - 12) {
+      top = Math.max(60, rect.top - popoverHeight - 8);
     }
+    // Final clamp so a tall popover on a short window stays fully visible
+    top = Math.max(12, Math.min(window.innerHeight - popoverHeight - 12, top));
     popover.style.left = `${left}px`;
     popover.style.top = `${top}px`;
   }
@@ -1849,9 +1851,11 @@ function renderChatThreadsDropdown(chats) {
   els.chatThreadSelect.innerHTML = chats
     .map((c) => {
       const msgCount = (c.messages || []).length;
-      return `<option value="${c.id}" ${c.id === state.activeChatId ? "selected" : ""}>${escapeHtml(
-        c.title || "Doubt Session"
-      )} (${msgCount} msgs)</option>`;
+      const fullTitle = c.title || "Doubt Session";
+      const shortTitle = fullTitle.length > 34 ? `${fullTitle.slice(0, 33).trimEnd()}…` : fullTitle;
+      return `<option value="${c.id}" title="${escapeHtml(fullTitle)}" ${c.id === state.activeChatId ? "selected" : ""}>${escapeHtml(
+        shortTitle
+      )} (${msgCount})</option>`;
     })
     .join("");
   els.chatThreadSelect.value = state.activeChatId || chats[0]?.id || "";
@@ -2301,9 +2305,13 @@ function handleReaderSelection() {
   const range = sel.getRangeAt(0);
   const rect = range.getBoundingClientRect();
   if (els.selectionPopover) {
-    els.selectionPopover.style.left = `${rect.left + rect.width / 2}px`;
-    els.selectionPopover.style.top = `${Math.max(58, rect.top)}px`;
     els.selectionPopover.style.display = "inline-flex";
+    const halfW = (els.selectionPopover.offsetWidth || 300) / 2;
+    const margin = 8;
+    const centerX = rect.left + rect.width / 2;
+    const clampedX = Math.max(halfW + margin, Math.min(window.innerWidth - halfW - margin, centerX));
+    els.selectionPopover.style.left = `${clampedX}px`;
+    els.selectionPopover.style.top = `${Math.max(58, rect.top)}px`;
   }
 }
 
