@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Patra — Study Desk & Assignment Workbench</title>
+  <!-- Editorial & Monospace Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
+  <!-- KaTeX CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="/static/styles.css?v=6" />
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Top Editorial Command Bar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button id="toggleSidebarBtn" class="icon-btn" title="Toggle Sidebar (Ctrl+B)">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2.5"></rect>
+            <line x1="9" y1="3" x2="9" y2="21"></line>
+          </svg>
+        </button>
+        <div class="brand">
+          <span class="brand-mark">पत्र</span>
+          <span class="brand-name">Patra</span>
+          <span class="brand-divider">/</span>
+          <span class="brand-sub">Study Workbench</span>
+        </div>
+      </div>
+
+      <!-- Active Document Breadcrumb + Inline Status & Project Controls -->
+      <div class="topbar-center" id="topbarDocBar">
+        <span class="crumb-muted" id="emptyBreadcrumb">Select or digitise an assignment or notebook</span>
+        <div class="active-doc-header-controls" id="activeDocHeaderControls" style="display:none;">
+          <button id="starDocBtn" class="star-btn" title="Star / Pin Document">☆</button>
+          <input type="text" id="docTitleInput" class="doc-title-inline-input" title="Click to rename document" />
+          <select id="docProjectSelect" class="pill-select" title="Assign to Project / Course"></select>
+          <select id="docCategorySelect" class="pill-select" title="Document Category">
+            <option value="Assignment">Assignment</option>
+            <option value="Lecture Notes">Lecture Notes</option>
+            <option value="Exam Prep">Exam Prep</option>
+            <option value="Research Paper">Paper</option>
+          </select>
+          <select id="docStatusSelect" class="pill-select status-pill-select" title="Assignment Workflow Status">
+            <option value="todo">○ To Do</option>
+            <option value="in_progress">◐ In Progress</option>
+            <option value="completed">● Completed</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <button id="openUploadModalBtn" class="btn btn-primary btn-sm">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          <span>Digitise PDF</span>
+        </button>
+
+        <button id="apiKeyStatusBtn" class="api-pill" title="Configure API Key">
+          <span class="status-dot" id="apiKeyDot"></span>
+          <span id="apiKeyLabel">API Key</span>
+        </button>
+
+        <button id="themeToggleBtn" class="icon-btn" title="Toggle Archival Paper / Midnight Theme">
+          <svg id="themeIconSun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg id="themeIconMoon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+
+        <!-- Collapsible Chat Toggle in Topbar -->
+        <button id="toggleChatPaneBtn" class="icon-btn" title="Toggle Doubt Studio Panel (Ctrl+\)">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2.5"></rect>
+            <line x1="15" y1="3" x2="15" y2="21"></line>
+            <path d="M8 9h4"></path>
+            <path d="M8 13h2"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main 3-Column Resizable Workspace -->
+    <div class="workspace" id="workspaceGrid">
+      <!-- Left Column: Projects, Assignments & Global Chat History -->
+      <aside class="sidebar" id="sidebarPane">
+        <!-- Sidebar Top Mode Switcher: Library vs Past Chats -->
+        <div class="sidebar-nav-tabs">
+          <button class="side-tab active" data-side-tab="library" id="sideTabLibrary">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            </svg>
+            <span>Files & Projects</span>
+          </button>
+          <button class="side-tab" data-side-tab="chats" id="sideTabChats">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <span>Past Chats</span>
+            <span class="tab-pill-count" id="globalChatCountBadge">0</span>
+          </button>
+        </div>
+
+        <!-- TAB 1: Projects, Assignments & Document Library -->
+        <div class="sidebar-tab-panel" id="libraryPanel">
+          <!-- Projects / Courses Section -->
+          <div class="sidebar-block">
+            <div class="sidebar-section-header">
+              <span>Projects / Courses</span>
+              <button class="mini-add-btn" id="newProjectBtn" title="Create New Course / Project">+ New</button>
+            </div>
+
+            <!-- Inline New Project Creator Card with Curated Color Swatches -->
+            <form id="newProjectForm" class="new-project-form" style="display:none;">
+              <div class="new-project-header">
+                <span>New Project / Course</span>
+                <button type="button" class="btn-icon-subtle" id="cancelNewProjectBtn" title="Cancel">×</button>
+              </div>
+              <input type="text" id="newProjectName" placeholder="Course / Project name..." autocomplete="off" required />
+              <div class="color-picker-row">
+                <span class="color-picker-label">Color:</span>
+                <div class="color-swatches" id="projectColorSwatches">
+                  <button type="button" class="color-swatch-dot active" data-color="#B84A27" style="background:#B84A27;" title="Terracotta"></button>
+                  <button type="button" class="color-swatch-dot" data-color="#2E6F5E" style="background:#2E6F5E;" title="Forest"></button>
+                  <button type="button" class="color-swatch-dot" data-color="#3B6EA5" style="background:#3B6EA5;" title="Sapphire"></button>
+                  <button type="button" class="color-swatch-dot" data-color="#8E5B96" style="background:#8E5B96;" title="Plum"></button>
+                  <button type="button" class="color-swatch-dot" data-color="#C48B28" style="background:#C48B28;" title="Amber"></button>
+                  <button type="button" class="color-swatch-dot" data-color="#5B6078" style="background:#5B6078;" title="Slate"></button>
+                </div>
+                <input type="hidden" id="newProjectColor" value="#B84A27" />
+              </div>
+              <div class="new-project-actions">
+                <button type="submit" class="btn btn-primary btn-xs" id="submitNewProjectBtn">Create</button>
+              </div>
+            </form>
+
+            <div class="project-list" id="projectList">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+
+          <!-- Search, Category Filter & Sort Controls -->
+          <div class="sidebar-filter-box">
+            <div class="search-input-wrap">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input type="text" id="docSearchInput" placeholder="Filter assignments & notes..." />
+            </div>
+
+            <div class="filter-chips-row" id="categoryFilterRow">
+              <button class="filter-chip active" data-cat="all">All</button>
+              <button class="filter-chip" data-cat="Assignment">Assignments</button>
+              <button class="filter-chip" data-cat="Lecture Notes">Notes</button>
+              <button class="filter-chip" data-cat="Exam Prep">Exam</button>
+            </div>
+
+            <div class="sort-row">
+              <span class="sort-label">Sort by</span>
+              <select id="docSortSelect" class="sort-select">
+                <option value="updated">Recently Active</option>
+                <option value="newest">Newest Uploaded</option>
+                <option value="status">Assignment Status</option>
+                <option value="title">Title (A–Z)</option>
+                <option value="pages">Page Count</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Document / Assignment List -->
+          <div class="doc-list" id="docList">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+        <!-- TAB 2: Global Past Chats Archive -->
+        <div class="sidebar-tab-panel" id="chatsArchivePanel" style="display:none;">
+          <div class="sidebar-filter-box">
+            <div class="search-input-wrap">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input type="text" id="chatArchiveSearchInput" placeholder="Search past doubt sessions..." />
+            </div>
+          </div>
+          <div class="global-chat-list" id="globalChatList">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+      </aside>
+
+      <!-- Center Column: Document Reader & Split View -->
+      <main class="reader-pane" id="readerPane">
+        <!-- Floating Pill to Reopen Chat when collapsed -->
+        <button id="expandChatFab" class="expand-chat-fab" title="Open Doubt Chat (Ctrl+\)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+          <span>Ask Doubt / Chat</span>
+        </button>
+
+        <!-- Empty / Welcome State -->
+        <div class="empty-desk" id="emptyDeskState">
+          <div class="empty-desk-inner">
+            <div class="editorial-kicker">STUDY & ASSIGNMENT WORKBENCH</div>
+            <h1 class="editorial-display">Digitise handwritten assignments & PDFs. Solve doubts with precision.</h1>
+            <p class="editorial-lead">
+              Upload multi-page assignments, problem sets, or lecture notes. Extracts every equation, table, and diagram into structured pages stored locally—ready for in-place editing and multi-thread doubt solving.
+            </p>
+
+            <div class="quick-dropzone" id="welcomeDropzone">
+              <input type="file" id="quickFileInput" accept=".pdf,.png,.jpg,.jpeg,.zip" hidden />
+              <div class="drop-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="12" y1="18" x2="12" y2="12"></line>
+                  <line x1="9" y1="15" x2="15" y2="15"></line>
+                </svg>
+              </div>
+              <div class="drop-title">Drop a PDF or scanned assignment here, or <span class="drop-link">browse files</span></div>
+              <div class="drop-hint">Auto-batches PDFs >10 pages · Renders LaTeX equations & tables · 22 Indian languages + English</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active Job Conversion Progress View -->
+        <div class="conversion-progress-view" id="conversionProgressView" style="display:none;">
+          <div class="progress-card">
+            <div class="progress-kicker">DOCUMENT DIGITISATION</div>
+            <h2 class="progress-title" id="progressDocTitle">Digitising document...</h2>
+            <p class="progress-stage" id="progressStageText">Preparing document...</p>
+
+            <div class="progress-bar-track">
+              <div class="progress-bar-fill" id="progressBarFill" style="width: 8%;"></div>
+            </div>
+
+            <div class="progress-stats">
+              <span id="progressPagesLabel">0 / 1 pages processed</span>
+              <span id="progressBatchLabel">Batch 1 of 1</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Loaded Document Reader View -->
+        <div class="reader-container" id="readerContainer" style="display:none;">
+          <!-- Reader Toolbar -->
+          <div class="reader-toolbar">
+            <div class="reader-meta-group">
+              <span class="meta-tag" id="docLangBadge">en-IN</span>
+              <span class="meta-stat" id="docPagesStat">1 page</span>
+              <span class="meta-sep">·</span>
+              <span class="meta-stat" id="docWordsStat">0 words</span>
+              <span class="meta-sep">·</span>
+
+              <!-- Adobe Acrobat-Style Page Navigator & Slider -->
+              <div class="acrobat-page-bar" id="acrobatPageBar">
+                <button type="button" class="icon-btn-sm" id="prevPageBtn" title="Previous Page (‹)">‹</button>
+                <div class="page-input-group">
+                  <input type="number" id="currentPageInput" min="1" value="1" title="Current Page" />
+                  <span class="page-slash">/</span>
+                  <span id="totalPagesLabel">1</span>
+                </div>
+                <button type="button" class="icon-btn-sm" id="nextPageBtn" title="Next Page (›)">›</button>
+                <input type="range" id="acrobatPageSlider" class="acrobat-slider" min="1" max="1" value="1" title="Scrub pages" />
+              </div>
+
+              <!-- Retain fallback for any legacy script references -->
+              <div class="page-jump-bar" id="pageJumpBar" style="display:none;"></div>
+            </div>
+
+            <!-- In-Place Editing & Undo/Redo Controls -->
+            <div class="in-place-edit-controls">
+              <button class="icon-btn-sm" id="undoEditBtn" title="Undo Edit (Ctrl+Z)" disabled>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="1 4 1 10 7 10"></polyline>
+                  <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                </svg>
+              </button>
+              <button class="icon-btn-sm" id="redoEditBtn" title="Redo Edit (Ctrl+Y)" disabled>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="23 4 23 10 17 10"></polyline>
+                  <path d="M20.49 15a9 9 0 1 1-2.13-9.36L23 10"></path>
+                </svg>
+              </button>
+              <button class="edit-mode-pill active" id="editModeIndicator" title="In-place editing active — click anywhere to edit directly">
+                <span class="edit-pill-dot"></span>
+                <span>Edit in Place</span>
+              </button>
+            </div>
+
+            <div class="reader-controls">
+              <div class="segmented-control" role="tablist">
+                <button class="seg-btn active" data-view="reader" id="viewReaderBtn">Reader</button>
+                <button class="seg-btn" data-view="split" id="viewSplitBtn">Split PDF</button>
+                <button class="seg-btn" data-view="source" id="viewSourceBtn">Source</button>
+              </div>
+
+              <!-- Dark Mode PDF / Diagram Contrast Toggle -->
+              <button class="icon-btn-sm" id="pdfThemeModeBtn" title="Toggle Dark-Mode Invert on Original PDF & Scanned Diagrams">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="9"></circle>
+                  <path d="M12 3v18"></path>
+                  <path d="M12 3a9 9 0 0 1 0 18"></path>
+                </svg>
+                <span id="pdfThemeModeLabel">PDF: Natural</span>
+              </button>
+
+              <div class="font-controls">
+                <button class="icon-btn-sm" id="fontDecreaseBtn" title="Smaller text">A−</button>
+                <button class="icon-btn-sm" id="fontIncreaseBtn" title="Larger text">A+</button>
+              </div>
+
+              <button class="icon-btn-sm" id="copyMarkdownBtn" title="Copy Content">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+              </button>
+
+              <button class="icon-btn-sm" id="downloadMarkdownBtn" title="Download Digitised File">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Reader Body -->
+          <div class="reader-body" id="readerBody">
+            <!-- Left Half in Split Mode: Canvas PDF Viewer (Zero Browser Auto-Downloads) -->
+            <div class="pdf-preview-pane" id="pdfPreviewPane" style="display:none;">
+              <div id="pdfCanvasContainer" class="pdf-canvas-container"></div>
+            </div>
+
+            <!-- Formatted Editorial Article -->
+            <div class="reader-scroll" id="readerScroll">
+              <article class="editorial-article" id="articleContent">
+                <!-- Rendered Pages, LaTeX Equations, Tables & Diagrams injected here -->
+              </article>
+            </div>
+
+            <!-- Raw Source Editor View -->
+            <div class="source-editor-pane" id="sourceEditorPane" style="display:none;">
+              <div class="source-editor-bar">
+                <span>Digitised Source (Edit LaTeX / Markdown / HTML & Save)</span>
+                <button class="btn btn-sm btn-primary" id="saveMarkdownBtn">Save & Re-render</button>
+              </div>
+              <textarea id="markdownTextarea" spellcheck="false"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Floating Inline Formula Editor Popover -->
+        <div class="math-editor-popover" id="mathEditorPopover" style="display:none;">
+          <div class="math-editor-header">
+            <span class="math-editor-title">Edit LaTeX Equation</span>
+            <button type="button" class="math-editor-close-btn" id="cancelMathEditBtn" title="Close">×</button>
+          </div>
+          <div class="math-editor-body">
+            <textarea id="mathEditorInput" rows="3" placeholder="Edit LaTeX equation... e.g. \\sum_{n=-\\infty}^{\\infty} x[n]e^{-j\\omega n}"></textarea>
+            <div class="math-editor-preview-label">Live Preview</div>
+            <div id="mathEditorPreview" class="math-editor-preview"></div>
+          </div>
+          <div class="math-editor-footer">
+            <button type="button" class="btn btn-xs btn-ghost btn-danger-text" id="deleteMathBlockBtn">Delete</button>
+            <div class="math-editor-footer-right">
+              <button type="button" class="btn btn-xs btn-primary" id="saveMathEditBtn">Update Equation</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Floating Text Selection Action Bar -->
+        <div class="selection-popover" id="selectionPopover" style="display:none;">
+          <button class="sel-action-btn" id="selAskDoubtBtn">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <span>Ask Doubt</span>
+          </button>
+          <span class="sel-divider"></span>
+          <button class="sel-action-btn" id="selVerifyStepBtn">Verify Step / Math</button>
+          <span class="sel-divider"></span>
+          <button class="sel-action-btn" id="selExplainBtn">Explain Simply</button>
+        </div>
+      </main>
+
+      <!-- Drag Resizer Handle -->
+      <div class="pane-resizer" id="chatResizer" title="Drag to resize Doubt Studio"></div>
+
+      <!-- Right Column: Multi-Thread Sarvam-105B Doubt Studio -->
+      <section class="chat-pane" id="chatPane">
+        <div class="chat-header">
+          <div class="chat-header-main">
+            <div class="chat-header-left">
+              <input type="text" id="activeChatTitleInput" class="chat-title-inline" value="New Doubt Session" title="Click to rename chat thread" />
+              <select id="chatThreadSelect" class="compact-thread-select" title="Switch chat thread"></select>
+            </div>
+            <div class="chat-header-actions">
+              <button class="icon-btn-sm" id="newChatThreadBtn" title="Start a new doubt thread on this document">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+              </button>
+              <button class="icon-btn-sm" id="deleteChatThreadBtn" title="Delete current chat thread">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+              </button>
+              <button class="icon-btn-sm" id="collapseChatBtn" title="Collapse Doubt Studio (Ctrl+\)">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Hidden fallback strip for multi-chat tabs compatibility -->
+          <div class="chat-threads-strip" id="chatThreadsStrip" style="display:none;"></div>
+        </div>
+
+        <!-- Conversation Feed -->
+        <div class="chat-feed" id="chatFeed">
+          <div class="chat-empty-state" id="chatEmptyState">
+            <div class="chat-empty-kicker">MULTI-THREAD DOUBT SOLVER</div>
+            <h3>Ask any doubt on this document</h3>
+            <p>Each chat session is saved automatically. Highlight any equation or paragraph in the reader to quote it directly.</p>
+            <div class="starter-prompts">
+              <button class="prompt-chip" data-prompt="Walk through the problems and mathematical derivations in this document step-by-step and summarize the key results.">
+                Walk through derivations & results
+              </button>
+              <button class="prompt-chip" data-prompt="Check the mathematical steps in this assignment for any algebraic, sign, or conceptual mistakes and point them out clearly.">
+                Check steps for mistakes
+              </button>
+              <button class="prompt-chip" data-prompt="List all key formulas, properties (like causality, stability, DTFT, or laws), and definitions used in these notes.">
+                Extract formulas & properties sheet
+              </button>
+              <button class="prompt-chip" data-prompt="Quiz me with 3 viva / exam questions based on this document and provide detailed solutions.">
+                Generate 3 exam/viva questions
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Composer Area -->
+        <div class="chat-composer">
+          <!-- Quoted Excerpt Pill -->
+          <div class="excerpt-banner" id="excerptBanner" style="display:none;">
+            <div class="excerpt-content">
+              <span class="excerpt-label">Quoted from document:</span>
+              <blockquote id="excerptText"></blockquote>
+            </div>
+            <button class="excerpt-close" id="clearExcerptBtn" title="Remove quote">×</button>
+          </div>
+
+          <form id="chatForm" class="composer-box">
+            <textarea
+              id="chatInput"
+              rows="2"
+              placeholder="Ask a doubt about an equation, step, or concept..."
+            ></textarea>
+            <div class="composer-footer">
+              <div class="composer-footer-left">
+                <select id="modelSelect" class="subtle-mini-select" title="Select Model">
+                  <option value="sarvam-105b" selected>Sarvam-105B</option>
+                  <option value="sarvam-105b-conversations">Sarvam-105B Conv</option>
+                </select>
+                <span class="composer-meta-dot">·</span>
+                <select id="reasoningSelect" class="subtle-mini-select" title="Reasoning Effort (Thinking Depth)">
+                  <option value="low" selected>Thinking: Low</option>
+                  <option value="none">Thinking: Off</option>
+                  <option value="medium">Thinking: Medium</option>
+                  <option value="high">Thinking: High</option>
+                </select>
+              </div>
+              <div class="composer-footer-right">
+                <span class="composer-hint">Enter to send · Shift+Enter newline</span>
+                <button type="submit" id="sendChatBtn" class="btn btn-primary btn-send">
+                  <span>Ask</span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Global Undo Toast Notification -->
+  <div class="undo-toast" id="undoToast" style="display:none;" role="status" aria-live="polite">
+    <span class="undo-toast-msg" id="undoToastMsg">Chat deleted</span>
+    <button type="button" class="undo-toast-btn" id="undoToastBtn">Undo</button>
+    <button type="button" class="undo-toast-close" id="undoToastClose" title="Dismiss">×</button>
+  </div>
+
+  <!-- Upload & Digitise Modal -->
+  <div class="modal-backdrop" id="uploadModal" style="display:none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <div class="modal-kicker">DOCUMENT DIGITISATION</div>
+          <h3>Digitise Assignment or Notes PDF</h3>
+        </div>
+        <button class="modal-close" id="closeUploadModalBtn">×</button>
+      </div>
+
+      <form id="uploadForm" class="modal-body">
+        <div class="file-drop-area" id="modalDropArea">
+          <input type="file" id="modalFileInput" accept=".pdf,.png,.jpg,.jpeg,.zip" hidden />
+          <div class="file-drop-label" id="selectedFileName">
+            Click to choose a PDF / Image, or drag & drop it here
+          </div>
+          <div class="file-drop-sub">PDFs over 10 pages are automatically split, digitised & stitched</div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="uploadProjectSelect">Project / Course</label>
+            <select id="uploadProjectSelect" class="form-select"></select>
+          </div>
+
+          <div class="form-group">
+            <label for="uploadCategorySelect">Document Type</label>
+            <select id="uploadCategorySelect" class="form-select">
+              <option value="Assignment" selected>Assignment / Problem Set</option>
+              <option value="Lecture Notes">Lecture Notes</option>
+              <option value="Exam Prep">Exam Prep</option>
+              <option value="Research Paper">Research Paper</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="uploadLanguageSelect">Document Language</label>
+            <select id="uploadLanguageSelect" class="form-select">
+              <option value="en-IN">English (en-IN)</option>
+              <option value="hi-IN">Hindi — हिन्दी (hi-IN)</option>
+            </select>
+            <span class="field-help">22 Indian languages + English</span>
+          </div>
+
+          <div class="form-group">
+            <label for="uploadFormatSelect">Extraction Mode</label>
+            <select id="uploadFormatSelect" class="form-select">
+              <option value="html" selected>Structured Pages + Diagrams + LaTeX (`html`)</option>
+              <option value="md">Clean Markdown (`md`)</option>
+            </select>
+            <span class="field-help">`html` preserves embedded diagrams & page layout</span>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" id="cancelUploadBtn">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="startDigitiseBtn">
+            Convert Document
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- API Key Configuration Modal -->
+  <div class="modal-backdrop" id="apiKeyModal" style="display:none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <div class="modal-kicker">AUTHENTICATION</div>
+          <h3>API Key</h3>
+        </div>
+        <button class="modal-close" id="closeApiKeyModalBtn">×</button>
+      </div>
+
+      <form id="apiKeyForm" class="modal-body">
+        <p class="modal-desc">
+          Configure your API key for document digitisation and doubt chat.
+        </p>
+
+        <div class="info-callout">
+          <div class="callout-title">Two ways to set your key:</div>
+          <ol class="callout-list">
+            <li>Paste it below — it saves directly to your local <code>.env</code> file.</li>
+            <li>Or open <code id="envPathDisplay">.env</code> in the project folder and set <code>SARVAM_API_KEY=your_key</code>.</li>
+          </ol>
+        </div>
+
+        <div class="form-group">
+          <label for="apiKeyInput">API Subscription Key</label>
+          <input
+            type="password"
+            id="apiKeyInput"
+            class="form-input"
+            placeholder="Paste your API key..."
+            autocomplete="off"
+          />
+          <span class="field-help" id="currentKeyHint">Saved locally in <code>.env</code></span>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" id="cancelApiKeyBtn">Close</button>
+          <button type="submit" class="btn btn-primary">Save Key to .env</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Diagram Lightbox Modal -->
+  <div class="modal-backdrop" id="imageLightboxModal" style="display:none;">
+    <div class="lightbox-card">
+      <div class="lightbox-top">
+        <span class="lightbox-caption-title">Extracted Figure / Diagram</span>
+        <div class="lightbox-actions">
+          <button class="btn btn-xs btn-primary" id="askDoubtAboutFigureBtn">Ask Doubt About This Diagram</button>
+          <button class="modal-close" id="closeLightboxBtn">×</button>
+        </div>
+      </div>
+      <div class="lightbox-img-wrap">
+        <img id="lightboxImg" src="" alt="Extracted figure" />
+      </div>
+      <div class="lightbox-desc" id="lightboxDesc"></div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+  <script src="/static/app.js?v=6"></script>
+</body>
+</html>

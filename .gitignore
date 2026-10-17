@@ -1,0 +1,19 @@
+# Environment & Secrets
+.env
+.env.local
+
+# Python Virtual Environment & Cache
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local User Data & Uploaded Documents
+data/
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
